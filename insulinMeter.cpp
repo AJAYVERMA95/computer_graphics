@@ -1,6 +1,11 @@
 #include "GL/freeglut.h"
 #include "GL/gl.h"
-void aRectangle(GLfloat bottomLeft_x,GLfloat bottomLeft_y,GLfloat length,GLfloat breadth){
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+// #define PI 3.14159265
+const float DEG2RAD = 3.14/180;
+void drawRectangle(GLfloat bottomLeft_x,GLfloat bottomLeft_y,GLfloat length,GLfloat breadth){
   glBegin(GL_QUADS);
     glVertex2f(bottomLeft_x,bottomLeft_y);
     glVertex2f(bottomLeft_x,bottomLeft_y + breadth);
@@ -19,9 +24,9 @@ void drawTriangle() {
   glFlush();
 }
 
-void showCurve() {
+void drawCurve() {
   GLfloat ctrlpoints[4][3] = {
-    { 600, 200, 0.0}, { 0, 200, 0.0},{100, 600, 0.0},{600, 600, 0.0} };
+    { 600, 200, 0.0}, { 0, 200, 0.0},{100, 400, 0.0},{600, 400, 0.0} };
   glLineWidth(3.0);
   glShadeModel(GL_FLAT);
   glMap1f(GL_MAP1_VERTEX_3, 0.0, 1.0, 3, 3, &ctrlpoints[0][0]);
@@ -32,7 +37,17 @@ void showCurve() {
       glEvalCoord1f((GLfloat) i/30.0);
   glEnd();
   glFlush();
+}
 
+void drawEllipse(float origin_x,float origin_y,float a,float b){
+  float x,y;
+  glColor3f(1, 0.271, 0);
+  glBegin(GL_POLYGON);
+    for(int i=0;i<360;i++){
+      float rad = i*DEG2RAD;
+      glVertex2f(cos(rad)* a + origin_x, sin(rad)* b + origin_y);
+    }
+  glEnd();
 }
 
 void drawDashedLine(GLfloat x1,GLfloat y1,GLfloat x2,GLfloat y2) {
@@ -48,34 +63,36 @@ void drawDashedLine(GLfloat x1,GLfloat y1,GLfloat x2,GLfloat y2) {
   glFlush();
 }
 
-void drawRectangle()
+void drawSlide()
 {
   glClearColor(0.0, 0.0, 1.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
+  drawEllipse(100,600,100,200);
+
   glColor3f(1.0, 1.0, 1.0);
-  aRectangle(600,100,800,600); //big rectangle
+  drawRectangle(600,100,800,600); //big rectangle
 
   glColor3f(1.0,0.0,1.0);
-  aRectangle(600+50,100+50,400,150); //pink rectangle
+  drawRectangle(600+50,100+50,400,150); //pink rectangle
   glColor3f(0.0,0.0,0.804);
-  aRectangle(600+50,100+50+150+50,400,125); //dark blue rectangle
+  drawRectangle(600+50,100+50+150+50,400,125); //dark blue rectangle
   glColor3f(0.118,0.565,1.0);
-  aRectangle(600+50+40,100+50+150+50+125+75,360,100); //dodger blue rectangle
-  aRectangle(600+50,100+50+150+50+125+75+33.33,40,33.333);
+  drawRectangle(600+50+40,100+50+150+50+125+75,360,100); //dodger blue rectangle
+  drawRectangle(600+50,100+50+150+50+125+75+33.33,40,33.333);
   glColor3f(0.0,1.0,0.0);
-  aRectangle(600+50+400+60,100+50+150+50,200,300); //green rectangle
+  drawRectangle(600+50+400+60,100+50+150+50,200,300); //green rectangle
   glColor3f(1.0,0.0,0.0);
-  aRectangle(600+50+400+60+120,100+50,70,250); //red rectangle
+  drawRectangle(600+50+400+60+120,100+50,70,250); //red rectangle
   glColor3f(0.0,1.0,0.0);
   drawTriangle();
   glColor3f(0.541,0.169,0.886);
-  aRectangle(600+50+400+60+50,100+50+20,70,105);
+  drawRectangle(600+50+400+60+50,100+50+20,70,105);
   drawDashedLine(600+50+240,100+50,600+50+240,100+50+150);
   drawDashedLine(600+50+250+10,100+50,600+50+250+10,100+50+150);
   drawDashedLine(600+50+250+10,100+50+60,600+50+400+60+120,100+50+60);
   drawDashedLine(600+50+250+10,100+50+60+25,600+50+400+60+120,100+50+60+25);
-  showCurve();
+  drawCurve();
 }
 
 void init() {
@@ -87,11 +104,11 @@ void init() {
 int main(int argc, char *argv[]) {
   glutInit(&argc,argv);
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-  glutInitWindowSize(1000,1000);
+  glutInitWindowSize(1280,800);
   glutInitWindowPosition(0,0);
   glutCreateWindow("Insulin Meter");
   init();
-  glutDisplayFunc(drawRectangle);
+  glutDisplayFunc(drawSlide);
   glutMainLoop();
 
   return 0;
